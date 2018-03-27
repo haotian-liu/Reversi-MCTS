@@ -3,4 +3,4 @@ project(Reversi)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Reversi main.cpp)
+add_executable(Reversi main.cpp MCTS/MCTS.cpp MCTS/MCTS.h MCTS/Modules/TreeNode.cpp MCTS/Modules/TreeNode.h)
