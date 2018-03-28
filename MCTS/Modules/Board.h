@@ -18,6 +18,7 @@ public:
     bool has_finished() const;
     std::vector<Action> get_available_actions() const;
     bool operator==(const Board &board) const;
+    uint64_t get(int player) const;
 
 private:
     uint64_t p1, p2;
