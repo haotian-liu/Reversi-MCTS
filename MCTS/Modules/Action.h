@@ -7,12 +7,24 @@
 
 #include <unordered_map>
 
-struct Action {
-    int coord;
-
-    bool operator==(const Action &action) const {
-        return coord == action.coord;
+class Action {
+public:
+    explicit Action(int coord, int player) : coord(63 - coord), player(player) {
+        //
     }
+    int get_coord() const {
+        return 63 - coord;
+    }
+    int get_player() const {
+        return player;
+    }
+    bool operator==(const Action &action) const {
+        return this->get_coord() == action.get_coord();
+    }
+
+private:
+    int coord;
+    int player;
 };
 
 

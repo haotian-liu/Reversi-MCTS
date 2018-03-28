@@ -79,5 +79,5 @@ void TreeNode::bp(double value) {
 }
 
 std::vector<Action> TreeNode::get_available_actions() const {
-    return state.board.get_available_actions();
+    return state.board.get_available_actions(0);
 }

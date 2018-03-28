@@ -16,11 +16,15 @@ public:
     Board() : p1(P1Initial), p2(P2Initial) {}
     Board(uint64_t p1, uint64_t p2) : p1(p1), p2(p2) {}
     bool has_finished() const;
-    std::vector<Action> get_available_actions() const;
+    std::vector<Action> get_available_actions(int player) const;
     bool operator==(const Board &board) const;
     uint64_t get(int player) const;
+    void setPlayer(int player) { currentPlayer = player; }
+    void switchPlayer() { currentPlayer = !(currentPlayer - 1) + 1; }
 
 private:
+    bool is_available(const Action &action) const;
+    int currentPlayer = 1;
     uint64_t p1, p2;
 };
 
