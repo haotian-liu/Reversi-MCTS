@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1> The Othello Client</h1>
+<div style="display: flex">
+    <div>
+        <div id="info"></div>
+        <table id="main" class="bg">
+        </table>
+    </div>
+    <div id="log"></div>
+</div>
+<style>
+    .bg {
+        background-color: gray;
+    }
+
+    .b {
+        background-color: black;
+    }
+
+    .w {
+        background-color: white;
+    }
+
+    .c {
+        background-color: greenyellow;
+    }
+
+    table div {
+        height: 48px;
+        width: 48px;
+        border-radius: 48px;
+    }
+
+    td {
+        border: 5px solid darkslategray;
+        margin: 0;
+    }
+
+    p {
+        padding: 0;
+        margin: 0;
+        font-size: 8px;
+    }
+</style>
+<script>
+    const server = "http://localhost:4000/$";
+    const infodom = document.getElementById('info');
+    const logdom = document.getElementById('log');
+    const maindom = document.getElementById('main');
+    const a0to7 = [0, 1, 2, 3, 4, 5, 6, 7];
+    const nulltrigger = (i, j) => 0;
+    const flip = x => x === 0 ? 0 : x === 1 ? 2 : 1;
+    const styles = ["", "b", "w", "c"];
+    let trigger = nulltrigger;
+
+    function syncData(board) {
+        maindom.innerHTML = a0to7.map(i =>
+            `<tr>${ a0to7.map(j =>
+                `<td><div class="${styles[board[i][j]]}" ${
+                    board[i][j] === 3 ? `onclick="trigger(${i}, ${j})"` : ""
+                    } /></td>`).join('')
+                }</tr>`).join('');
+        let b = 0, w = 0;
+        for(let i = 0; i < 8 ; i++){
+            for(let j = 0; j < 8; j++){
+                if(board[i][j] == 1) b++;
+                if(board[i][j] == 2) w++;
+            }
+        }
+        infodom.innerHTML = `white:${w}, black:${b}`;
+    }
+
+    const dx = [-1, 0, 1, -1, 1, -1, 0, 1];
+    const dy = [-1, -1, -1, 0, 0, 1, 1, 1];
+
+    function checkEqual(board, i, j, role) {
+        if (i < 0 || j < 0 || i >= 8 || j >= 8) return false;
+        return board[i][j] === role;
+    }
+
+    function checkEnd(board) {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (board[i][j] == 0) return false;
+            }
+        }
+        return true;
+    }
+
+    function doAction(board, i, j, role) {
+        board[i][j] = role;
+        for (let k = 0; k < 8; k++) {
+            const ddx = dx[k], ddy = dy[k];
+            let h = 1;
+            while (checkEqual(board, i + ddx * h, j + ddy * h, flip(role)))
+                h++;
+            if (h !== 1 && checkEqual(board, i + ddx * h, j + ddy * h, role)) {
+                for (let u = 1; u < h; u++) {
+                    board[i + ddx * u][j + ddy * u] = role;
+                }
+            }
+        }
+    }
+
+    function markLegal(board, role, notmark) {
+        let cnt = 0;
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (board[i][j] === 0) {
+                    for (let k = 0; k < 8; k++) {
+                        const ddx = dx[k], ddy = dy[k];
+                        let h = 1;
+                        while (checkEqual(board, i + ddx * h, j + ddy * h, flip(role)))
+                            h++;
+                        if (h !== 1 && checkEqual(board, i + ddx * h, j + ddy * h, role)) {
+                            cnt++;
+                            if(!notmark) board[i][j] = 3;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return cnt !== 0;
+    }
+
+    function unmarkLegal(board) {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (board[i][j] === 3) {
+                    board[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    function RandomPlayer() {
+        trigger = nulltrigger;
+        return function (role, board, resolve) {
+            if (!markLegal(board, role)) {
+                resolve(board);
+                return;
+            }
+            let x = 0, y = 0;
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (board[i][j] === 3) {
+                        x = i;
+                        y = j;
+                        break
+                    }
+                }
+            }
+
+            doAction(board, x, y, role);
+            unmarkLegal(board);
+            trigger = nulltrigger;
+            syncData(board);
+            resolve(board);
+        }
+    }
+
+    function HumanPlayer() {
+        trigger = nulltrigger;
+        return function (role, board, resolve) {
+            if (!markLegal(board, role)) {
+                resolve(board);
+                return;
+            }
+            syncData(board);
+            trigger = function (i, j) {
+                doAction(board, i, j, role);
+                unmarkLegal(board);
+                trigger = nulltrigger;
+                syncData(board);
+                resolve(board);
+            }
+        }
+    }
+
+    function RemotePlayer(server) {
+        function serialize(data, role) {
+            return data.map(x => x.map(y => role === 1 ? y : flip(y)).join('')).join('');
+        }
+
+        return function (role, board, resolve) {
+            if(!markLegal(board, role, true)){
+                logdom.innerHTML += `<p>remote skip</p>`
+                resolve(board);
+                return;
+            }
+            fetch(server + serialize(board, role))
+                .then(x => x.text())
+                .then(action => {
+                    markLegal(board, role, false)
+                    const i = parseInt(action / 8), j = action % 8;
+                    if( board[i][j] != 3){
+                        logdom.innerHTML += `<p>[Remote] illegal move</p>`;
+                    }
+                    doAction(board, i, j, role);
+                    unmarkLegal(board);
+                    syncData(board);
+                    resolve(board);
+                });
+        }
+    }
+
+
+    function startGame(player1, player2) {
+        let data = a0to7.map(_ => a0to7.map(_ => 0));
+        data[3][3] = 2;
+        data[3][4] = 1;
+        data[4][3] = 1;
+        data[4][4] = 2;
+
+        function next_player1(board) {
+            if (checkEnd(board)) return;
+            infodom.innerHTML += "[wait for p1]";
+            player1(1, board, next_player2);
+        }
+
+        function next_player2(board) {
+            if (checkEnd(board)) return;
+            infodom.innerHTML += "[wait for p2]";
+            player2(2, board, next_player1);
+        }
+
+        next_player1(data);
+    }
+
+    startGame(RemotePlayer('http://10.214.149.25:3000/$'), RemotePlayer('http://127.0.0.1:4000/$'));
+        //RemotePlayer('http://10.214.149.25:3000/$'),RemotePlayer('http://127.0.0.1:4000/$'));
+    //RemotePlayer('http://10.214.149.25:3000/$'), HumanPlayer());
+
+</script>
+</body>
+</html>
