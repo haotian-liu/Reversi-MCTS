@@ -21,7 +21,7 @@ void MCTS::execute(TreeNode *target) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
                 }
             } else {
-                node = node->expand();
+                node = node->expand(Action());
             }
         }
 
@@ -30,7 +30,7 @@ void MCTS::execute(TreeNode *target) {
             break;
         }
         auto playout = node->simulate();
-        node->bp();
+        node->bp(playout);
     }
 }
 
