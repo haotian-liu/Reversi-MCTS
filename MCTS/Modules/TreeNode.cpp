@@ -3,6 +3,7 @@
 //
 
 #include "TreeNode.h"
+#include "Simulator/Simulator.h"
 #include <cmath>
 
 int TreeNode::total_simul = 0;
@@ -26,6 +27,8 @@ TreeNode *TreeNode::expand(Action action) {
     }
     auto state = this->state;
     auto child = new TreeNode(state, this);
+    using children_map_type = decltype(children);
+    children.insert(children_map_type::value_type(action, child));
 }
 
 double TreeNode::ucb() const {
@@ -45,8 +48,25 @@ TreeNode *TreeNode::select() const {
     }
 }
 
-int TreeNode::simulate() const {
-    return 0;
+TreeNode *TreeNode::find(TreeNode *target) const {
+    if (state == target->state) {
+        return const_cast<TreeNode *>(this);
+    }
+    if (children.empty()) {
+        return nullptr;
+    }
+    for (const auto &child : children) {
+        auto result = child.second->find(target);
+        if (result != nullptr) {
+            return result;
+        }
+    }
+    return nullptr;
+}
+
+double TreeNode::simulate() const {
+    auto sim = Simulator(state.board);
+    return sim.run();
 }
 
 void TreeNode::bp(double value) {
@@ -59,5 +79,5 @@ void TreeNode::bp(double value) {
 }
 
 std::vector<Action> TreeNode::get_available_actions() const {
-    return std::vector<Action>();
+    return state.board.get_available_actions();
 }

@@ -5,11 +5,12 @@
 #ifndef REVERSI_ACTION_H
 #define REVERSI_ACTION_H
 
+#include <unordered_map>
 
 struct Action {
     int coord;
 
-    bool operator==(const Action &action) {
+    bool operator==(const Action &action) const {
         return coord == action.coord;
     }
 };

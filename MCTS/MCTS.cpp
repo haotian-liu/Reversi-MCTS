@@ -35,5 +35,5 @@ void MCTS::execute(TreeNode *target) {
 }
 
 TreeNode *MCTS::find(TreeNode *target) {
-    return nullptr;
+    return root.find(target);
 }

@@ -9,10 +9,10 @@
 
 struct State {
     explicit State(const Board &board) : board(board) {}
-    bool operator==(const State &state) {
+    bool operator==(const State &state) const {
         return board == state.board;
     }
-    Board board;
+    Board board{};
 };
 
 
