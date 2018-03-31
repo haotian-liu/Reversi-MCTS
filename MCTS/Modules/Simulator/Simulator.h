@@ -12,11 +12,11 @@ public:
     explicit Simulator(const Board &board) : board(board) {
         //
     }
-    virtual double run() const {
+    virtual double run() {
         return 0;
     }
 
-private:
+protected:
     Board board{};
 };
 

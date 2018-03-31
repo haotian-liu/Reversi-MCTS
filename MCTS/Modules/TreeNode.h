@@ -11,7 +11,7 @@
 #include "State.h"
 
 static const auto actionHasher = [](const Action &action) {
-    return action.coord;
+    return action.get_coord();
 };
 
 class TreeNode {
@@ -21,6 +21,7 @@ public:
     }
     bool has_finished() const;
     bool is_expanded() const;
+    Action random_expand() const;
     TreeNode *expand(Action action);
     TreeNode *select() const;
     TreeNode *find(TreeNode *target) const;

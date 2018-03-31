@@ -18,7 +18,17 @@ uint64_t Board::get(int player) const {
     return 0;
 }
 
-std::vector<Action> Board::get_available_actions(int player=-1) const {
+void Board::putWith(const Action &action) {
+    uint64_t mask = static_cast<uint64_t>(1) << action.get_coord();
+    if (p1 & mask || p2 & mask) {
+        fprintf(stderr, "Board::putWith: putting chess on invalid pos.");
+        exit(-1);
+    }
+    if (action.get_player() == 1) { p1 |= mask; }
+    else { p2 |= mask; }
+}
+
+std::vector<Action> Board::get_available_actions(int player) const {
     std::vector<Action> actions;
     int actionPlayer = player == -1 ? currentPlayer : player;
     for (int i=0; i<64; i++) {
@@ -63,4 +73,19 @@ bool Board::is_available(const Action &action) const {
         }
     }
     return FLAG;
+}
+
+double Board::playout(int player) const {
+    auto act_p1 = player & 1 ? p1 : p2; // action player
+    auto act_p2 = player & 2 ? p1 : p2; // action rival
+    return bitcount(act_p1) - bitcount(act_p2);
+}
+
+int Board::bitcount(uint64_t n) const {
+    int count = 0;
+    while (n > 0) {
+        count++;
+        n &= n - 1;
+    }
+    return count;
 }

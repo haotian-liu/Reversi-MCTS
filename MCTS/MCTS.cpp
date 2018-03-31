@@ -21,7 +21,8 @@ void MCTS::execute(TreeNode *target) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
                 }
             } else {
-                node = node->expand(Action());
+                auto action = node->random_expand();
+                node = node->expand(action);
             }
         }
 

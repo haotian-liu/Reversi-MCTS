@@ -3,8 +3,9 @@
 //
 
 #include "TreeNode.h"
-#include "Simulator/Simulator.h"
+#include "Simulator/SimulRand.h"
 #include <cmath>
+#include <random>
 
 int TreeNode::total_simul = 0;
 
@@ -14,6 +15,26 @@ bool TreeNode::has_finished() const {
 
 bool TreeNode::is_expanded() const {
     return get_available_actions().size() == children.size();
+}
+
+Action TreeNode::random_expand() const {
+    auto actions = get_available_actions();
+    if (actions.empty() || actions.size() == children.size()) {
+        fprintf(stderr, "TreeNode::random_expand fails: fully expanded.");
+        exit(-1);
+    }
+    for (const auto &child : children) {
+        auto action = std::find(actions.begin(), actions.end(), child.second);
+        if (action == actions.end()) {
+            fprintf(stderr, "TreeNode::random_expand found invalid operation in children.");
+            exit(-1);
+        }
+        actions.erase(action);
+    }
+    static std::default_random_engine generator;
+    std::uniform_int_distribution<int> distribution(1, actions.size());
+    int id = distribution(generator) - 1;
+    return actions[id];
 }
 
 TreeNode *TreeNode::expand(Action action) {
@@ -27,6 +48,7 @@ TreeNode *TreeNode::expand(Action action) {
     }
     auto state = this->state;
     auto child = new TreeNode(state, this);
+    child->state.board.putWith(action);
     using children_map_type = decltype(children);
     children.insert(children_map_type::value_type(action, child));
 }
@@ -65,7 +87,7 @@ TreeNode *TreeNode::find(TreeNode *target) const {
 }
 
 double TreeNode::simulate() const {
-    auto sim = Simulator(state.board);
+    auto sim = SimulRand(state.board);
     return sim.run();
 }
 

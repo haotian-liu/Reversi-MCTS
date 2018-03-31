@@ -13,7 +13,7 @@ public:
         //
     }
 
-    double run() const;
+    double run() override;
 private:
 };
 
