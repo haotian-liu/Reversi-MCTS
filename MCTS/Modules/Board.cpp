@@ -61,7 +61,12 @@ void Board::updateAfterPut(const Action &action) {
         auto act_mask = action.get_coord() >> 3;
         bool flag = false;
         int shifts = 0;
-        while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
+        while (act >= 0 && act < 64
+               && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)
+               && (shift != -7 || act % 8 != 0)
+               && (shift != -9 || act % 8 != 7)
+               && (shift !=  7 || act % 8 != 7)
+               && (shift !=  9 || act % 8 != 0)) {
             auto mask = HIGHESTBIT >> act;
             if (act_p2 & mask) {
                 shifts++;
@@ -74,6 +79,10 @@ void Board::updateAfterPut(const Action &action) {
         if (flag
             && act >= 0 && act < 64
             && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)
+            && (shift != -7 || act % 8 != 0)
+            && (shift != -9 || act % 8 != 7)
+            && (shift !=  7 || act % 8 != 7)
+            && (shift !=  9 || act % 8 != 0)
             && (act_p1 & (HIGHESTBIT >> act))) {
             act = action.get_coord() + shift;
             while (shifts--) {
@@ -135,7 +144,12 @@ bool Board::is_available(const Action &action) const {
         auto act = action.get_coord() + shift;
         auto act_mask = action.get_coord() >> 3;
         bool flag = false;
-        while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
+        while (act >= 0 && act < 64
+               && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)
+               && (shift != -7 || act % 8 != 0)
+               && (shift != -9 || act % 8 != 7)
+               && (shift !=  7 || act % 8 != 7)
+               && (shift !=  9 || act % 8 != 0)) {
             auto mask = HIGHESTBIT >> act;
             if (act_p2 & mask) {
                 flag = true;
