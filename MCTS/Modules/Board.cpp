@@ -18,7 +18,7 @@ uint64_t Board::get(int player) const {
     fprintf(stderr, "Board::get_coord player is invalid.");
     return 0;
 }
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 #include <iostream>
 #endif
@@ -182,9 +182,21 @@ int Board::bit2int(uint64_t n) const {
     return k;
 }
 
+//#define DEBUG_PLAYOUT
+#ifdef DEBUG_PLAYOUT
+#include <iostream>
+#endif
 double Board::playout(int player) const {
     auto act_p1 = player & 1 ? p1 : p2; // action player
     auto act_p2 = player & 2 ? p1 : p2; // action rival
+    if (player != 1 && player != 2) {
+        fprintf(stderr, "Board::playout fails: player not specified.");
+        exit(-1);
+    }
+
+#ifdef DEBUG_PLAYOUT
+    std::cout << "Playout: " << bitcount(act_p1) - bitcount(act_p2) << std::endl;
+#endif
     return bitcount(act_p1) - bitcount(act_p2);
 }
 

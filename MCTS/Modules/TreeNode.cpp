@@ -52,8 +52,14 @@ TreeNode *TreeNode::expand(Action action) {
     children.insert(children_map_type::value_type(action, child));
     return child;
 }
-
+//#define DEBUG_UCB
+#ifdef DEBUG_UCB
+#include <iostream>
+#endif
 double TreeNode::ucb() const {
+#ifdef DEBUG_UCB
+    std::cout << playout + sqrt(2.0 * log(TreeNode::total_simul) / simuls) << std::endl;
+#endif
     return playout + sqrt(2.0 * log(TreeNode::total_simul) / simuls);
 }
 
