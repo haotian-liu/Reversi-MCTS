@@ -64,7 +64,7 @@
             `<tr>${ a0to7.map(j =>
                 `<td><div class="${styles[board[i][j]]}" ${
                     board[i][j] === 3 ? `onclick="trigger(${i}, ${j})"` : ""
-                    } /></td>`).join('')
+                    }>${i*8+j}</div></td>`).join('')
                 }</tr>`).join('');
         let b = 0, w = 0;
         for(let i = 0; i < 8 ; i++){
