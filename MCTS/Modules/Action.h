@@ -9,11 +9,11 @@
 
 class Action {
 public:
-    explicit Action(int coord, int player) : coord(63 - coord), player(player) {
+    explicit Action(int coord, int player) : coord(coord), player(player) {
         //
     }
     int get_coord() const {
-        return 63 - coord;
+        return coord;
     }
     int get_player() const {
         return player;

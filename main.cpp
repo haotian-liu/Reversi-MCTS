@@ -32,14 +32,14 @@ char * board2str(Board & board){
 
 Board str2board(const char *str) {
     uint64_t p1 = 0, p2 = 0;
-    uint64_t mask = 1;
+    uint64_t mask = 0xffffffffffffffff;
     for(int i = 0; i < 64; i++){
         if (str[i] == '1') {
             p1 |= mask;
         } else if (str[i] == '2') {
             p2 |= mask;
         }
-        mask <<= 1;
+        mask >>= 1;
     }
     return {p1, p2};
 }

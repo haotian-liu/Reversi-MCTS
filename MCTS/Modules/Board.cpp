@@ -57,10 +57,10 @@ void Board::updateAfterPut(const Action &action) {
 
     for (auto shift : SHIFT) {
         auto act = action.get_coord() + shift;
-        auto act_mask = act << 3;
+        auto act_mask = act >> 3;
         bool flag = false;
-        while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act << 3) == act_mask)) {
-            auto mask = 1 << act;
+        while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
+            auto mask = static_cast<uint64_t>(1) << act;
             if (act_p2 & mask) {
                 flag = true;
             }
@@ -69,10 +69,10 @@ void Board::updateAfterPut(const Action &action) {
             }
             act += shift;
         }
-        if (flag && act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act << 3) == act_mask)) {
+        if (flag && act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
             act = action.get_coord() + shift;
             while (act >= 0 && act < 64) {
-                auto mask = 1 << act;
+                auto mask = static_cast<uint64_t>(1) << act;
                 if (act_p2 & mask) {
                     new_p1 |= mask;
                     new_p2 &= ~mask;
@@ -131,19 +131,18 @@ bool Board::is_available(const Action &action) const {
 
     for (auto shift : SHIFT) {
         auto act = action.get_coord() + shift;
-        auto act_mask = act << 3;
+        auto act_mask = act >> 3;
         bool flag = false;
-        while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act << 3) == act_mask)) {
-            auto mask = 1 << act;
+        while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
+            auto mask = static_cast<uint64_t>(1) << act;
             if (act_p2 & mask) {
                 flag = true;
-            }
-            if (act_p1 & mask) {
+            } else {
                 break;
             }
             act += shift;
         }
-        if (flag && act >= 0 && act < 64 && (act_p1 & (1 << act))) {
+        if (flag && act >= 0 && act < 64 && (act_p1 & (static_cast<uint64_t>(1) << act))) {
             FLAG = true;
             break;
         }

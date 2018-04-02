@@ -8,8 +8,21 @@
 #include "Action.h"
 #include <vector>
 
-static const uint64_t P1Initial = static_cast<uint64_t>(0b1000000001000) << 24;
-static const uint64_t P2Initial = static_cast<uint64_t>(0b0100000010000) << 24;
+/*
+ *
+ * Action order
+ *   0,  1,  2,  3,  4,  5,  6,  7
+ *   8,  9, 10, 11, 12, 13, 14, 15
+ *
+ * binary representation:
+ * from higher to lower bit === Action 0 ~ 63
+ *
+ * Black is the first to go === black ~ P1, white ~ P2
+ *
+ */
+
+static const uint64_t P1Initial = static_cast<uint64_t>(0b0000100000010000) << 24;
+static const uint64_t P2Initial = static_cast<uint64_t>(0b0001000000001000) << 24;
 
 class Board {
 public:
