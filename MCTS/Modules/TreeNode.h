@@ -24,6 +24,7 @@ public:
     Action random_expand() const;
     TreeNode *expand(Action action);
     TreeNode *select() const;
+    const Action * best_action() const;
     TreeNode *find(TreeNode *target) const;
     double simulate() const;
     void bp(double value);

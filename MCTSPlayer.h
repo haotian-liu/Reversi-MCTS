@@ -39,8 +39,16 @@ public:
             fprintf(stderr, "MCTSPlayer::move fails, nullptr after expand!");
             exit(-1);
         }
-        fprintf(stderr, "test");
-        return 20;
+
+        auto bestAction = node->best_action();
+        if (bestAction == nullptr) {
+            fprintf(stderr, "MCTSPlayer::move fails, cannot find a best move!");
+            exit(-1);
+        } else {
+            lastBoard = newBoard;
+            lastBoard.putWith(*bestAction);
+            return bestAction->get_coord();
+        }
     }
 private:
     Board lastBoard;

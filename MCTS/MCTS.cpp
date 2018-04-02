@@ -19,17 +19,18 @@ void MCTS::execute(TreeNode *target) {
                 node = node->select();
                 if (node == nullptr) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
+                    exit(-1);
                 }
             } else {
                 auto action = node->random_expand();
                 node = node->expand(action);
+                if (node == nullptr) {
+                    fprintf(stderr, "MCTS::execute expand nullptr.");
+                    exit(-1);
+                }
             }
         }
 
-        if (node == nullptr) {
-            fprintf(stderr, "MCTS::execute simulating node nullptr.");
-            break;
-        }
         auto playout = node->simulate();
         node->bp(playout);
     }

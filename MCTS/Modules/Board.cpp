@@ -7,6 +7,7 @@
 bool Board::has_finished() const {
     auto finished = (p1 == 0 || p2 == 0 || (p1 | p2) == 0xffffffffffffffff);
     if (finished) { return true; }
+    return get_available_actions().empty();
     // both cannot continue, game ends
     return get_available_actions(1).empty() && get_available_actions(2).empty();
 }

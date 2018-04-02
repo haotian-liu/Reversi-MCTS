@@ -43,7 +43,7 @@ TreeNode *TreeNode::expand(Action action) {
     }
     if (std::find(actions.begin(), actions.end(), action) == actions.end()) {
         fprintf(stderr, "TreeNode::expand action invalid.");
-        return nullptr;
+        exit(-1);
     }
     auto state = this->state;
     auto child = new TreeNode(state, this);
@@ -67,6 +67,23 @@ TreeNode *TreeNode::select() const {
                 return p1.second->ucb() < p2.second->ucb();
             }
         )->second;
+    }
+}
+
+const Action * TreeNode::best_action() const {
+    if (children.empty()) {
+        return nullptr;
+    } else {
+        const Action *bestAction = &children.begin()->first;
+        auto bestValue = children.begin()->second->ucb();
+        for (const auto &child : children) {
+            auto bValue = child.second->ucb();
+            if (bValue > bestValue) {
+                bestAction = &child.first;
+                bestValue = bValue;
+            }
+        }
+        return bestAction;
     }
 }
 

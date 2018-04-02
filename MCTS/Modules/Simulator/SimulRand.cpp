@@ -18,7 +18,6 @@ double SimulRand::run() {
         int id = distribution(generator) - 1;
         auto &action = actions[id];
         board.putWith(action);
-        board.switchPlayer();
     }
     return board.playout(currentPlayer);
 }
