@@ -152,8 +152,8 @@ bool Board::is_available(const Action &action) const {
 
 Action Board::diff(const Board &other) const {
     uint64_t action_mask = (p1 | p2) ^ (other.get(1) | other.get(2));
-    int action = bit2int(action_mask);
-    if (action_mask & other.get(1)) { return Action(action, 1); }
+    int action = 63 - bit2int(action_mask);
+    if (action_mask & (p1 | other.get(1))) { return Action(action, 1); }
     else { return Action(action, 2); }
 }
 

@@ -32,7 +32,7 @@ char * board2str(Board & board){
 
 Board str2board(const char *str) {
     uint64_t p1 = 0, p2 = 0;
-    uint64_t mask = 0xffffffffffffffff;
+    uint64_t mask = 0x8000000000000000;
     for(int i = 0; i < 64; i++){
         if (str[i] == '1') {
             p1 |= mask;
@@ -41,7 +41,7 @@ Board str2board(const char *str) {
         }
         mask >>= 1;
     }
-    return {p1, p2};
+    return {p2, p1};
 }
 
 MCTSPlayer mp;
