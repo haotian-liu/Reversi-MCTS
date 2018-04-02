@@ -23,6 +23,7 @@
 
 static const uint64_t P1Initial = static_cast<uint64_t>(0b0000100000010000) << 24;
 static const uint64_t P2Initial = static_cast<uint64_t>(0b0001000000001000) << 24;
+static const uint64_t HIGHESTBIT = static_cast<uint64_t>(1) << 63;
 
 class Board {
 public:

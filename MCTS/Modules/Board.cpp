@@ -24,20 +24,20 @@ uint64_t Board::get(int player) const {
 void Board::putWith(const Action &action) {
 #ifdef DEBUG
     {
-        uint64_t mask = 1;
+        uint64_t mask = HIGHESTBIT;
         for (int i=0; i<64; i++) {
             if (i && i % 8 == 0) std::cout << std::endl;
             char c;
             if (p1 & mask) c = '1';
             else if (p2 & mask) c = '2';
             else c = ' ';
-            std::cout << c << (action.get_coord() == i ? 'x' : ' ') << " ";
-            mask <<= 1;
+            std::cout << c << (action.get_coord() == i ? (action.get_player() == 1 ? 'x' : 'o') : ' ') << " ";
+            mask >>= 1;
         }
         std::cout << std::endl << "------------------------" << std::endl;
     }
 #endif
-    uint64_t mask = static_cast<uint64_t>(1) << action.get_coord();
+    uint64_t mask = HIGHESTBIT >> action.get_coord();
     if (p1 & mask || p2 & mask) {
         fprintf(stderr, "Board::putWith: putting chess on invalid pos.");
         exit(-1);
@@ -57,29 +57,30 @@ void Board::updateAfterPut(const Action &action) {
 
     for (auto shift : SHIFT) {
         auto act = action.get_coord() + shift;
-        auto act_mask = act >> 3;
+        auto act_mask = action.get_coord() >> 3;
         bool flag = false;
+        int shifts = 0;
         while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
-            auto mask = static_cast<uint64_t>(1) << act;
+            auto mask = HIGHESTBIT >> act;
             if (act_p2 & mask) {
+                shifts++;
                 flag = true;
-            }
-            if (act_p1 & mask) {
+            } else {
                 break;
             }
             act += shift;
         }
-        if (flag && act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
+        if (flag
+            && act >= 0 && act < 64
+            && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)
+            && (act_p1 & (HIGHESTBIT >> act))) {
             act = action.get_coord() + shift;
-            while (act >= 0 && act < 64) {
-                auto mask = static_cast<uint64_t>(1) << act;
-                if (act_p2 & mask) {
-                    new_p1 |= mask;
-                    new_p2 &= ~mask;
-                }
-                if (act_p1 & mask) {
-                    break;
-                }
+            while (shifts--) {
+                auto mask = HIGHESTBIT >> act;
+
+                new_p1 |= mask;
+                new_p2 &= ~mask;
+
                 act += shift;
             }
         }
@@ -88,15 +89,15 @@ void Board::updateAfterPut(const Action &action) {
     p2 = action.get_player() & 2 ? new_p1 : new_p2;
 #ifdef DEBUG
     {
-        uint64_t mask = 1;
+        uint64_t mask = HIGHESTBIT;
         for (int i=0; i<64; i++) {
             if (i && i % 8 == 0) std::cout << std::endl;
             char c;
             if (p1 & mask) c = '1';
             else if (p2 & mask) c = '2';
             else c = ' ';
-            std::cout << c << (action.get_coord() == i ? 'x' : ' ') << " ";
-            mask <<= 1;
+            std::cout << c << (action.get_coord() == i ? (action.get_player() == 1 ? 'x' : 'o') : ' ') << " ";
+            mask >>= 1;
         }
         std::cout << std::endl << "------------------------" << std::endl;
     }
@@ -121,7 +122,7 @@ bool Board::operator==(const Board &board) const {
 
 bool Board::is_available(const Action &action) const {
     static std::vector<int> SHIFT = {-9, -8, -7, -1, 1, 7, 8, 9};
-    auto action_mask = static_cast<uint64_t>(1) << action.get_coord();
+    auto action_mask = HIGHESTBIT >> action.get_coord();
     if ((p1 & action_mask) || (p2 & action_mask)) { return false; } // if already
 
     auto act_p1 = action.get_player() & 1 ? p1 : p2; // action player
@@ -131,10 +132,10 @@ bool Board::is_available(const Action &action) const {
 
     for (auto shift : SHIFT) {
         auto act = action.get_coord() + shift;
-        auto act_mask = act >> 3;
+        auto act_mask = action.get_coord() >> 3;
         bool flag = false;
         while (act >= 0 && act < 64 && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)) {
-            auto mask = static_cast<uint64_t>(1) << act;
+            auto mask = HIGHESTBIT >> act;
             if (act_p2 & mask) {
                 flag = true;
             } else {
@@ -142,7 +143,7 @@ bool Board::is_available(const Action &action) const {
             }
             act += shift;
         }
-        if (flag && act >= 0 && act < 64 && (act_p1 & (static_cast<uint64_t>(1) << act))) {
+        if (flag && act >= 0 && act < 64 && (act_p1 & (HIGHESTBIT >> act))) {
             FLAG = true;
             break;
         }
