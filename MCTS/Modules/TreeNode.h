@@ -27,6 +27,7 @@ public:
     TreeNode *find(TreeNode *target) const;
     double simulate() const;
     void bp(double value);
+
 private:
     State state;
     TreeNode *parent;
@@ -38,6 +39,11 @@ private:
     int simuls;
 
     double ucb() const;
+
+public:
+    auto get_children() const -> const decltype(children) {
+        return children;
+    }
 };
 
 

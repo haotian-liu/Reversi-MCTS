@@ -4,7 +4,6 @@
 
 #include "TreeNode.h"
 #include "Simulator/SimulRand.h"
-#include <cmath>
 #include <random>
 
 int TreeNode::total_simul = 0;
@@ -24,7 +23,7 @@ Action TreeNode::random_expand() const {
         exit(-1);
     }
     for (const auto &child : children) {
-        auto action = std::find(actions.begin(), actions.end(), child.second);
+        auto action = std::find(actions.begin(), actions.end(), child.first);
         if (action == actions.end()) {
             fprintf(stderr, "TreeNode::random_expand found invalid operation in children.");
             exit(-1);
@@ -51,6 +50,7 @@ TreeNode *TreeNode::expand(Action action) {
     child->state.board.putWith(action);
     using children_map_type = decltype(children);
     children.insert(children_map_type::value_type(action, child));
+    return child;
 }
 
 double TreeNode::ucb() const {
@@ -101,5 +101,5 @@ void TreeNode::bp(double value) {
 }
 
 std::vector<Action> TreeNode::get_available_actions() const {
-    return state.board.get_available_actions(0);
+    return state.board.get_available_actions(-1);
 }

@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Board str2board(char * str){
+/*Board str2board(char * str){
     Board board;
     for(int i = 0; i < 64; i++){
         int val = 0;
@@ -28,12 +28,28 @@ char * board2str(Board & board){
     }
     result[64] = 0;
     return result;
+}*/
+
+Board str2board(const char *str) {
+    uint64_t p1 = 0, p2 = 0;
+    uint64_t mask = 1;
+    for(int i = 0; i < 64; i++){
+        if (str[i] == '1') {
+            p1 |= mask;
+        } else if (str[i] == '2') {
+            p2 |= mask;
+        }
+        mask <<= 1;
+    }
+    return {p1, p2};
 }
 
+MCTSPlayer mp;
+
 char * httpd_callback(char * str){
-    char * action_str = new char[64];
+    auto action_str = new char[64];
     Board board = str2board(str);
-    int action = resolve(board);
+    int action = mp.move(board);
     sprintf(action_str, "%d", action);
     return action_str;
 }

@@ -5,14 +5,16 @@
 #ifndef OTHELLO_COMMON_H
 #define OTHELLO_COMMON_H
 
-struct Board{
-    char data[8][8];
-};
+#include "MCTSPlayer.h"
+
+//struct Board{
+//    char data[8][8];
+//};
 
 char * httpd_callback(char * callback);
 int httpd_main();
 
-int resolve(Board & board);
+//int resolve(Board & board);
 
 #if defined (__i386__)
 static __inline__ unsigned long long GetCycleCount(void)

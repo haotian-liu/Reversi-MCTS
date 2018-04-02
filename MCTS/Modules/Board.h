@@ -8,8 +8,8 @@
 #include "Action.h"
 #include <vector>
 
-static const uint64_t P1Initial = 0b1000000001000 << 24;
-static const uint64_t P2Initial = 0b0100000010000 << 24;
+static const uint64_t P1Initial = static_cast<uint64_t>(0b1000000001000) << 24;
+static const uint64_t P2Initial = static_cast<uint64_t>(0b0100000010000) << 24;
 
 class Board {
 public:
@@ -24,10 +24,13 @@ public:
     void putWith(const Action &action);
     double playout(int player) const;
     int get_player() const { return currentPlayer; }
+    Action diff(const Board &other) const;
 
 private:
     bool is_available(const Action &action) const;
     int bitcount(uint64_t n) const;
+    int bit2int(uint64_t n) const;
+    void updateAfterPut(const Action &action);
     int currentPlayer = 1;
     uint64_t p1, p2;
 };

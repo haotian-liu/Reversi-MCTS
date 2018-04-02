@@ -234,7 +234,9 @@
         next_player1(data);
     }
 
-    startGame(RemotePlayer('http://10.214.149.25:3000/$'), RemotePlayer('http://127.0.0.1:4000/$'));
+    startGame(HumanPlayer(), RemotePlayer('http://127.0.0.1:4000/$'));
+    // startGame(RemotePlayer('http://127.0.0.1:4000/$'), HumanPlayer());
+    // startGame(RemotePlayer('http://10.214.149.25:3000/$'), RemotePlayer('http://127.0.0.1:4000/$'));
         //RemotePlayer('http://10.214.149.25:3000/$'),RemotePlayer('http://127.0.0.1:4000/$'));
     //RemotePlayer('http://10.214.149.25:3000/$'), HumanPlayer());
 

@@ -11,12 +11,12 @@ const int MaxMCTSSim = 50;
 
 class MCTS {
 public:
+    explicit MCTS(TreeNode &root) : root(root) {}
     void execute(TreeNode *target);
-private:
-
     TreeNode *find(TreeNode *target);
+
+private:
     TreeNode root;
-    TreeNode *current;
 };
 
 
