@@ -28,6 +28,7 @@ void MCTS::execute(TreeNode *target) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
                     exit(-1);
                 }
+                break;
             }
         }
 
