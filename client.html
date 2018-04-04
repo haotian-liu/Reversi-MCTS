@@ -144,7 +144,9 @@
         trigger = nulltrigger;
         return function (role, board, resolve) {
             if (!markLegal(board, role)) {
+                logdom.innerHTML += `<p>random dead</p>`
                 //resolve(board);
+
                 return;
             }
             let x = 0, y = 0;
@@ -170,6 +172,7 @@
         trigger = nulltrigger;
         return function (role, board, resolve) {
             if (!markLegal(board, role)) {
+                logdom.innerHTML += `<p>human dead</p>`
                 //resolve(board);
                 return;
             }
