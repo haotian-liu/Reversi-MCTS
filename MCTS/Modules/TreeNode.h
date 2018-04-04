@@ -51,6 +51,7 @@ private:
     int simuls;
 
     double ucb() const;
+    double value() const;
     void sync_global_recorder(double value);
 
 public:

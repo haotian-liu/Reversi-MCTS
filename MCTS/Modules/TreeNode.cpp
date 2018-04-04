@@ -70,6 +70,26 @@ double TreeNode::ucb() const {
     }
 }
 
+//#define DEBUG_VALUE
+#ifdef DEBUG_VALUE
+#include <iostream>
+#endif
+double TreeNode::value() const {
+    auto node = TreeNode::recorder.find(state.board);
+    if (node == TreeNode::recorder.end()) {
+        fprintf(stderr, "TreeNode::ucb attempts to estimate an unvisited node.");
+        exit(-1);
+    } else {
+//        double retValue = node->second.playout / node->second.simuls;
+//        double retValue = simuls;
+        double retValue = ucb();
+#ifdef DEBUG_VALUE
+        std::cout << retValue << std::endl;
+#endif
+        return retValue;
+    }
+}
+
 TreeNode *TreeNode::select() const {
     if (children.empty()) {
         return nullptr;
@@ -88,9 +108,9 @@ const Action * TreeNode::best_action() const {
         return nullptr;
     } else {
         const Action *bestAction = &children.begin()->first;
-        auto bestValue = children.begin()->second->ucb();
+        auto bestValue = children.begin()->second->value();
         for (const auto &child : children) {
-            auto bValue = child.second->ucb();
+            auto bValue = child.second->value();
             if (bValue > bestValue) {
                 bestAction = &child.first;
                 bestValue = bValue;
