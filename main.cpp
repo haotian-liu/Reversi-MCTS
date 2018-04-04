@@ -41,7 +41,7 @@ Board str2board(const char *str) {
         }
         mask >>= 1;
     }
-    return {p2, p1};
+    return {p2, p1, 2};
 }
 
 MCTSPlayer mp;

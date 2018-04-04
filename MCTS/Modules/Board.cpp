@@ -7,7 +7,6 @@
 bool Board::has_finished() const {
     auto finished = (p1 == 0 || p2 == 0 || (p1 | p2) == 0xffffffffffffffff);
     if (finished) { return true; }
-    return get_available_actions().empty();
     // both cannot continue, game ends
     return get_available_actions(1).empty() && get_available_actions(2).empty();
 }
@@ -38,6 +37,10 @@ void Board::putWith(const Action &action) {
         std::cout << std::endl << "------------------------" << std::endl;
     }
 #endif
+    if (action.is_dummy()) {
+        switchPlayer();
+        return;
+    }
     uint64_t mask = HIGHESTBIT >> action.get_coord();
     if (p1 & mask || p2 & mask) {
         fprintf(stderr, "Board::putWith: putting chess on invalid pos.");
@@ -127,13 +130,18 @@ std::vector<Action> Board::get_available_actions(int player) const {
 }
 
 bool Board::operator==(const Board &board) const {
-    return board.get(1) == p1 && board.get(2) == p2;
+    return board.get(1) == p1 && board.get(2) == p2 && currentPlayer == board.get_player();
 }
 
 bool Board::is_available(const Action &action) const {
     static std::vector<int> SHIFT = {-9, -8, -7, -1, 1, 7, 8, 9};
     auto action_mask = HIGHESTBIT >> action.get_coord();
-    if ((p1 & action_mask) || (p2 & action_mask)) { return false; } // if already
+    if ((p1 & action_mask) || (p2 & action_mask)) {
+#ifdef DEBUG
+        fprintf(stderr, "Board::is_available invalid action, already put.\n");
+#endif
+        return false;
+    } // if already
 
     auto act_p1 = action.get_player() & 1 ? p1 : p2; // action player
     auto act_p2 = action.get_player() & 2 ? p1 : p2; // action rival
@@ -158,7 +166,11 @@ bool Board::is_available(const Action &action) const {
             }
             act += shift;
         }
-        if (flag && act >= 0 && act < 64 && (act_p1 & (HIGHESTBIT >> act))) {
+        if (flag && act >= 0 && act < 64 && (((shift != 1 && shift != -1) || (act >> 3) == act_mask)
+                                             && (shift != -7 || act % 8 != 0)
+                                             && (shift != -9 || act % 8 != 7)
+                                             && (shift !=  7 || act % 8 != 7)
+                                             && (shift !=  9 || act % 8 != 0)) && (act_p1 & (HIGHESTBIT >> act))) {
             FLAG = true;
             break;
         }

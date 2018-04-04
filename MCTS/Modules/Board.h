@@ -29,6 +29,7 @@ class Board {
 public:
     Board() : p1(P1Initial), p2(P2Initial) {}
     Board(uint64_t p1, uint64_t p2) : p1(p1), p2(p2) {}
+    Board(uint64_t p1, uint64_t p2, int currentPlayer) : p1(p1), p2(p2), currentPlayer(currentPlayer) {}
     Board(const Board &board) : p1(board.get(1)), p2(board.get(2)), currentPlayer(board.get_player()) {}
     bool has_finished() const;
     std::vector<Action> get_available_actions(int player=-1) const;

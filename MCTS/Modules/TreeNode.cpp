@@ -14,7 +14,7 @@ bool TreeNode::has_finished() const {
 }
 
 bool TreeNode::is_expanded() const {
-    return get_available_actions().size() == children.size();
+    return get_available_actions().size() == children.size() || get_available_actions().empty();
 }
 
 Action TreeNode::random_expand() const {
@@ -39,10 +39,10 @@ Action TreeNode::random_expand() const {
 
 TreeNode *TreeNode::expand(Action action) {
     auto actions = get_available_actions();
-    if (actions.empty()) {
+    if (!action.is_dummy() && actions.empty()) {
         return nullptr;
     }
-    if (std::find(actions.begin(), actions.end(), action) == actions.end()) {
+    if (!action.is_dummy() && std::find(actions.begin(), actions.end(), action) == actions.end()) {
         fprintf(stderr, "TreeNode::expand action invalid.");
         exit(-1);
     }

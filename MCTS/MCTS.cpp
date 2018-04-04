@@ -15,14 +15,15 @@ void MCTS::execute(TreeNode *target) {
         }
 
         while (!node->has_finished()) {
-            if (node->is_expanded()) {
+            if (node->is_expanded() && !node->get_children().empty()) {
                 node = node->select();
                 if (node == nullptr) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
                     exit(-1);
                 }
             } else {
-                auto action = node->random_expand();
+                auto action = node->is_expanded() && node->get_children().empty() ?
+                              Action(-1, node->get_current_player()) : node->random_expand();
                 node = node->expand(action);
                 if (node == nullptr) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");

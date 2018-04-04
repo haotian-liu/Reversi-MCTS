@@ -37,6 +37,7 @@ public:
     TreeNode *find(TreeNode *target) const;
     double simulate() const;
     void bp(double value);
+    int get_current_player() const { return state.board.get_player(); }
 
 private:
     State state;

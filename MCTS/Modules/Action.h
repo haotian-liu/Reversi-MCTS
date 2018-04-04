@@ -18,6 +18,9 @@ public:
     int get_player() const {
         return player;
     }
+    bool is_dummy() const {
+        return coord == -1;
+    }
     bool operator==(const Action &action) const {
         return this->get_coord() == action.get_coord();
     }

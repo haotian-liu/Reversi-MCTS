@@ -10,8 +10,8 @@ double SimulRand::run() {
     while (!board.has_finished()) {
         auto actions = board.get_available_actions();
         if (actions.empty()) {
-            fprintf(stderr, "SimulRand::run trys to simulate on a dead board.");
-            exit(-1);
+            board.switchPlayer();
+            continue;
         }
         static std::default_random_engine generator;
         std::uniform_int_distribution<int> distribution(1, actions.size());
