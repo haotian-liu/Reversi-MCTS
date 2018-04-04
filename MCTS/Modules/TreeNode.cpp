@@ -64,9 +64,9 @@ double TreeNode::ucb() const {
         exit(-1);
     } else {
 #ifdef DEBUG_UCB
-        std::cout << node->second.playout + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls) << std::endl;
+        std::cout << node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls) << std::endl;
 #endif
-        return node->second.playout + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
+        return node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
     }
 }
 
