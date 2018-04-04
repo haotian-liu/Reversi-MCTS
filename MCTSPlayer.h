@@ -36,14 +36,14 @@ public:
         auto newNode = TreeNode(State(newBoard));
         node = mcts->find(&newNode);
         if (node == nullptr) {
-            fprintf(stderr, "MCTSPlayer::move fails, nullptr after expand!");
+            fprintf(stderr, "MCTSPlayer::move fails, weird board situation!");
             exit(-1);
         }
 
         auto bestAction = node->best_action();
         if (bestAction == nullptr) {
-            fprintf(stderr, "MCTSPlayer::move fails, cannot find a best move!");
-            exit(-1);
+            printf("MCTSPlayer::move finds no action available, skipping...\n");
+            return -1; // skip action
         } else {
             lastBoard = newBoard;
             lastBoard.putWith(*bestAction);
