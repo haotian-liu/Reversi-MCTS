@@ -13,6 +13,15 @@
 static const auto actionHasher = [](const Action &action) {
     return action.get_coord();
 };
+static const auto boardStateHasher = [](const Board &board) {
+    return board.get(1) | board.get(2);
+};
+
+struct TreeNodeStatistic {
+    explicit TreeNodeStatistic(int simuls, double playout) : simuls(simuls), playout(playout) {}
+    int simuls = 0;
+    double playout = 0.0;
+};
 
 class TreeNode {
 public:
@@ -35,11 +44,13 @@ private:
     std::vector<Action> get_available_actions() const;
 
     std::unordered_map<Action, TreeNode *, decltype(actionHasher)> children;
+    static std::unordered_map<Board, TreeNodeStatistic, decltype(boardStateHasher)> recorder;
     double playout;
     static int total_simul;
     int simuls;
 
     double ucb() const;
+    void sync_global_recorder(double value);
 
 public:
     auto get_children() const -> const decltype(children) {

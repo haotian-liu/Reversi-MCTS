@@ -7,6 +7,7 @@
 #include <random>
 
 int TreeNode::total_simul = 0;
+std::unordered_map<Board, TreeNodeStatistic, decltype(boardStateHasher)> TreeNode::recorder(10, boardStateHasher);
 
 bool TreeNode::has_finished() const {
     return state.board.has_finished();
@@ -57,10 +58,16 @@ TreeNode *TreeNode::expand(Action action) {
 #include <iostream>
 #endif
 double TreeNode::ucb() const {
+    auto node = TreeNode::recorder.find(state.board);
+    if (node == TreeNode::recorder.end()) {
+        fprintf(stderr, "TreeNode::ucb attempts to estimate an unvisited node.");
+        exit(-1);
+    } else {
 #ifdef DEBUG_UCB
-    std::cout << playout + sqrt(2.0 * log(TreeNode::total_simul) / simuls) << std::endl;
+        std::cout << node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls) << std::endl;
 #endif
-    return playout + sqrt(2.0 * log(TreeNode::total_simul) / simuls);
+        return node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
+    }
 }
 
 TreeNode *TreeNode::select() const {
@@ -118,8 +125,20 @@ void TreeNode::bp(double value) {
     this->playout += value;
     simuls++;
     TreeNode::total_simul++;
+    sync_global_recorder(value); // AMAF policy
+
     if (parent != nullptr) {
         parent->bp(value);
+    }
+}
+
+void TreeNode::sync_global_recorder(double value) {
+    auto node = TreeNode::recorder.find(state.board);
+    if (node == TreeNode::recorder.end()) {
+        TreeNode::recorder.insert({state.board, TreeNodeStatistic(1, value)});
+    } else {
+        node->second.playout += value;
+        node->second.simuls++;
     }
 }
 
