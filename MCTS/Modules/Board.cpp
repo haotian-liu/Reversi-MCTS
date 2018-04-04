@@ -197,7 +197,9 @@ double Board::playout(int player) const {
 #ifdef DEBUG_PLAYOUT
     std::cout << "Playout: " << bitcount(act_p1) - bitcount(act_p2) << std::endl;
 #endif
-    return bitcount(act_p1) - bitcount(act_p2);
+
+    int v1 = bitcount(act_p1), v2 = bitcount(act_p2);
+    return v1 > v2 ? 1.0 : (v1 == v2 ? 0.5 : 0.0);
 }
 
 int Board::bitcount(uint64_t n) const {
