@@ -145,8 +145,7 @@
         return function (role, board, resolve) {
             if (!markLegal(board, role)) {
                 logdom.innerHTML += `<p>random dead</p>`
-                //resolve(board);
-
+                resolve(board);
                 return;
             }
             let x = 0, y = 0;
@@ -159,7 +158,6 @@
                     }
                 }
             }
-
             doAction(board, x, y, role);
             unmarkLegal(board);
             trigger = nulltrigger;
@@ -173,7 +171,7 @@
         return function (role, board, resolve) {
             if (!markLegal(board, role)) {
                 logdom.innerHTML += `<p>human dead</p>`
-                //resolve(board);
+                resolve(board);
                 return;
             }
             syncData(board);
@@ -187,21 +185,25 @@
         }
     }
 
-    function RemotePlayer(server) {
+    function RemotePlayer(server, allowSkip = false) {
         function serialize(data, role) {
             return data.map(x => x.map(y => role === 1 ? y : flip(y)).join('')).join('');
         }
 
         return function (role, board, resolve) {
-            if(!markLegal(board, role, true)){
+            if(!allowSkip && !markLegal(board, role, true)){
                 logdom.innerHTML += `<p>remote dead</p>`
-                //resolve(board);
+                resolve(board);
                 return;
             }
             fetch(server + serialize(board, role))
                 .then(x => x.text())
                 .then(action => {
-                    markLegal(board, role, false)
+                    if( allowSkip && action == -1 ){
+                        resolve(board);
+                        return;
+                    }
+                    markLegal(board, role, false);
                     const i = parseInt(action / 8), j = action % 8;
                     if( board[i][j] != 3){
                         logdom.innerHTML += `<p>[Remote] illegal move</p>`;
