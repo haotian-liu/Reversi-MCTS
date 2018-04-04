@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -144,7 +144,7 @@
         trigger = nulltrigger;
         return function (role, board, resolve) {
             if (!markLegal(board, role)) {
-                resolve(board);
+                //resolve(board);
                 return;
             }
             let x = 0, y = 0;
@@ -170,7 +170,7 @@
         trigger = nulltrigger;
         return function (role, board, resolve) {
             if (!markLegal(board, role)) {
-                resolve(board);
+                //resolve(board);
                 return;
             }
             syncData(board);
@@ -191,8 +191,8 @@
 
         return function (role, board, resolve) {
             if(!markLegal(board, role, true)){
-                logdom.innerHTML += `<p>remote skip</p>`
-                resolve(board);
+                logdom.innerHTML += `<p>remote dead</p>`
+                //resolve(board);
                 return;
             }
             fetch(server + serialize(board, role))
@@ -202,6 +202,7 @@
                     const i = parseInt(action / 8), j = action % 8;
                     if( board[i][j] != 3){
                         logdom.innerHTML += `<p>[Remote] illegal move</p>`;
+                        return;
                     }
                     doAction(board, i, j, role);
                     unmarkLegal(board);
@@ -234,7 +235,7 @@
         next_player1(data);
     }
 
-    startGame(HumanPlayer(), RemotePlayer('http://127.0.0.1:4000/$'));
+    startGame(HumanPlayer(), RemotePlayer('http://10.214.149.25:3000/$'));
     // startGame(RemotePlayer('http://127.0.0.1:4000/$'), HumanPlayer());
     // startGame(RemotePlayer('http://10.214.149.25:3000/$'), RemotePlayer('http://127.0.0.1:4000/$'));
         //RemotePlayer('http://10.214.149.25:3000/$'),RemotePlayer('http://127.0.0.1:4000/$'));
