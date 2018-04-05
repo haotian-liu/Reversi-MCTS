@@ -14,10 +14,11 @@ public:
         mcts = new MCTS(node);
     }
     int move(const Board &newBoard) {
-        if (newBoard == lastBoard) {
-            exit(-1);
-        }
         auto action = newBoard.diff(lastBoard);
+        if (newBoard == lastBoard) {
+            printf("MCTSPlayer::move other player fails to move, skipping...\n");
+            action = Action(-1, 1);
+        }
         auto lastNode = TreeNode(State(lastBoard));
         auto node = mcts->find(&lastNode);
         if (node == nullptr) {
