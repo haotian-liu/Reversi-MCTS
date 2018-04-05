@@ -6,7 +6,6 @@
 #include <random>
 
 double SimulRand::run() {
-    int currentPlayer = board.get_player();
     while (!board.has_finished()) {
         auto actions = board.get_available_actions();
         if (actions.empty()) {
@@ -19,5 +18,5 @@ double SimulRand::run() {
         auto &action = actions[id];
         board.putWith(action);
     }
-    return board.playout(currentPlayer);
+    return board.playout(2);
 }
