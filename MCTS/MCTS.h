@@ -7,7 +7,7 @@
 
 #include "Modules/TreeNode.h"
 
-const int MaxMCTSSim = 5000;
+const int MaxMCTSSim = 500;
 
 class MCTS {
 public:

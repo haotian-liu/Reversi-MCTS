@@ -38,6 +38,13 @@ public:
     double simulate() const;
     void bp(double value);
     int get_current_player() const { return state.board.get_player(); }
+    void debug() const {
+        printf("DEBUG_ p: %f, simul: %d, total: %d", playout, simuls, total_simul);
+        if (simuls < 0) {
+            fprintf(stderr, "ERROR simuls < 0!!!\n");
+            exit(-1);
+        }
+    }
 
 private:
     State state;
@@ -46,9 +53,8 @@ private:
 
     std::unordered_map<Action, TreeNode *, decltype(actionHasher)> children;
     static std::unordered_map<Board, TreeNodeStatistic, decltype(boardStateHasher)> recorder;
-    double playout;
-    static int total_simul;
-    int simuls;
+    double playout = 0;
+    int simuls = 0;
 
     double ucb() const;
     double value() const;
@@ -58,6 +64,8 @@ public:
     auto get_children() const -> const decltype(children) {
         return children;
     }
+
+    static int total_simul;
 };
 
 

@@ -66,7 +66,8 @@ double TreeNode::ucb() const {
 #ifdef DEBUG_UCB
         std::cout << node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls) << std::endl;
 #endif
-        return node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
+//        return node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
+        return playout / simuls + sqrt(2.0 * log(TreeNode::total_simul) / simuls);
     }
 }
 
@@ -144,7 +145,6 @@ double TreeNode::simulate() const {
 void TreeNode::bp(double value) {
     this->playout += value;
     simuls++;
-    TreeNode::total_simul++;
     sync_global_recorder(value); // AMAF policy
 
     if (parent != nullptr) {

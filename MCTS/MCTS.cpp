@@ -34,6 +34,7 @@ void MCTS::execute(TreeNode *target) {
         }
 
         auto playout = node->simulate();
+        TreeNode::total_simul++;
         node->bp(playout);
     }
 }
