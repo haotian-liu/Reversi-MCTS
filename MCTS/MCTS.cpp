@@ -37,6 +37,8 @@ void MCTS::execute(TreeNode *target) {
         TreeNode::total_simul++;
         node->bp(playout);
     }
+
+    base->select()->debug();
 }
 
 TreeNode *MCTS::find(TreeNode *target) {

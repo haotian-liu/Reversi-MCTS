@@ -4,6 +4,7 @@
 
 #include "TreeNode.h"
 #include "Simulator/SimulRand.h"
+#include "Simulator/SimulMinMax.h"
 #include <random>
 
 int TreeNode::total_simul = 0;
@@ -138,7 +139,7 @@ TreeNode *TreeNode::find(TreeNode *target) const {
 }
 
 double TreeNode::simulate() const {
-    auto sim = SimulRand(state.board);
+    auto sim = SimulMinMax(state.board);
     return sim.run();
 }
 
