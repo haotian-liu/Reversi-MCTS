@@ -39,7 +39,7 @@ public:
     void bp(double value);
     int get_current_player() const { return state.board.get_player(); }
     void debug() const {
-        printf("DEBUG_ p: %f, simul: %d, total: %d", playout, simuls, total_simul);
+        printf("DEBUG_ p: %f, simul: %d, total: %d\n", playout, simuls, total_simul);
         if (simuls < 0) {
             fprintf(stderr, "ERROR simuls < 0!!!\n");
             exit(-1);

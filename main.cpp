@@ -1,5 +1,8 @@
 #include "common.h"
 #include <iostream>
+
+#include <ctime>
+#include <sys/time.h>
 using namespace std;
 
 
@@ -47,9 +50,22 @@ Board str2board(const char *str) {
 MCTSPlayer mp;
 
 char * httpd_callback(char * str){
+
+
+    struct timeval t1,t2;
+    double timeuse;
+    printf("start search\n");
+    gettimeofday(&t1,NULL);
+
     auto action_str = new char[64];
     Board board = str2board(str);
     int action = mp.move(board);
+
+
+    gettimeofday(&t2,NULL);
+    timeuse = t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1000000.0;
+    printf("prediction time=%0.3fs\n", timeuse);
+
     sprintf(action_str, "%d", action);
     return action_str;
 }

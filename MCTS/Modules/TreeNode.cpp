@@ -3,8 +3,7 @@
 //
 
 #include "TreeNode.h"
-#include "Simulator/SimulRand.h"
-#include "Simulator/SimulMinMax.h"
+#include "Simulator/SimulGreedy.h"
 #include <random>
 
 int TreeNode::total_simul = 0;
@@ -59,17 +58,20 @@ TreeNode *TreeNode::expand(Action action) {
 #include <iostream>
 #endif
 double TreeNode::ucb() const {
-    auto node = TreeNode::recorder.find(state.board);
-    if (node == TreeNode::recorder.end()) {
-        fprintf(stderr, "TreeNode::ucb attempts to estimate an unvisited node.");
-        exit(-1);
-    } else {
-#ifdef DEBUG_UCB
-        std::cout << node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls) << std::endl;
-#endif
-//        return node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
-        return playout / simuls + sqrt(2.0 * log(TreeNode::total_simul) / simuls);
-    }
+    int total_simul = parent == nullptr ? TreeNode::total_simul : parent->simuls;
+    return playout / simuls + sqrt(2.0 * log(total_simul) / simuls);
+//    auto node = TreeNode::recorder.find(state.board);
+//    if (node == TreeNode::recorder.end()) {
+//        fprintf(stderr, "TreeNode::ucb attempts to estimate an unvisited node.");
+//        exit(-1);
+//    } else {
+//#ifdef DEBUG_UCB
+//        std::cout << node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls) << std::endl;
+//#endif
+////        return node->second.playout / node->second.simuls + sqrt(2.0 * log(TreeNode::total_simul) / node->second.simuls);
+////        printf("%f, %d, %d\n", playout, simuls, total_simul);
+//        return playout / simuls + sqrt(2.0 * log(total_simul) / simuls);
+//    }
 }
 
 //#define DEBUG_VALUE
@@ -77,19 +79,20 @@ double TreeNode::ucb() const {
 #include <iostream>
 #endif
 double TreeNode::value() const {
-    auto node = TreeNode::recorder.find(state.board);
-    if (node == TreeNode::recorder.end()) {
-        fprintf(stderr, "TreeNode::ucb attempts to estimate an unvisited node.");
-        exit(-1);
-    } else {
-//        double retValue = node->second.playout / node->second.simuls;
-//        double retValue = simuls;
-        double retValue = ucb();
-#ifdef DEBUG_VALUE
-        std::cout << retValue << std::endl;
-#endif
-        return retValue;
-    }
+    return ucb();
+//    auto node = TreeNode::recorder.find(state.board);
+//    if (node == TreeNode::recorder.end()) {
+//        fprintf(stderr, "TreeNode::ucb attempts to estimate an unvisited node.");
+//        exit(-1);
+//    } else {
+////        double retValue = node->second.playout / node->second.simuls;
+////        double retValue = simuls;
+//        double retValue = ucb();
+//#ifdef DEBUG_VALUE
+//        std::cout << retValue << std::endl;
+//#endif
+//        return retValue;
+//    }
 }
 
 TreeNode *TreeNode::select() const {
@@ -139,17 +142,25 @@ TreeNode *TreeNode::find(TreeNode *target) const {
 }
 
 double TreeNode::simulate() const {
-    auto sim = SimulMinMax(state.board);
+    auto sim = SimulGreedy(state.board);
     return sim.run();
 }
 
 void TreeNode::bp(double value) {
-    this->playout += value;
+    /*this->playout += value;
     simuls++;
     sync_global_recorder(value); // AMAF policy
 
     if (parent != nullptr) {
         parent->bp(value);
+    }*/
+    auto node = this;
+    while (node != nullptr) {
+        node->playout += value;
+        node->simuls++;
+//        node->sync_global_recorder(value); // AMAF policy
+
+        node = node->parent;
     }
 }
 
