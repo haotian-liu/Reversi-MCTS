@@ -7,12 +7,11 @@
 
 #include "Modules/TreeNode.h"
 
-const int MaxMCTSSim = 50;
-
+const int MaxMCTSSim = 5000;
 class MCTS {
 public:
     explicit MCTS(TreeNode &root) : root(root) {}
-    void execute(TreeNode *target);
+    void execute(TreeNode *target, int simulCount);
     TreeNode *find(TreeNode *target);
 
 private:

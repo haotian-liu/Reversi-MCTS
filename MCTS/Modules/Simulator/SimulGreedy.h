@@ -15,7 +15,7 @@ public:
 
     double run() override;
 
-    static double evalTunned(Board &board);
+    static int evalTunned(Board &board);
 };
 
 

@@ -4,7 +4,9 @@
 
 #include "TreeNode.h"
 #include "Simulator/SimulGreedy.h"
+#include "Simulator/SimulRand.h"
 #include <random>
+#include <algorithm>
 
 int TreeNode::total_simul = 0;
 std::unordered_map<Board, TreeNodeStatistic, decltype(boardStateHasher)> TreeNode::recorder(10, boardStateHasher);

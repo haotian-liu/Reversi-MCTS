@@ -3,23 +3,27 @@
 //
 
 #include "MCTS.h"
+#include <omp.h>
 
-void MCTS::execute(TreeNode *target) {
+void MCTS::execute(TreeNode *target, int simulCount) {
     auto base = find(target);
 
-    for (int i=0; i<MaxMCTSSim; i++) {
+#pragma omp parallel for
+    for (int i=0; i<simulCount; i++) {
         auto node = base;
         if (node == nullptr) {
             fprintf(stderr, "MCTS::execute base node nullptr.");
-            break;
         }
 
-        while (!node->has_finished()) {
+        bool cont = true;
+
+        while (!node->has_finished() && cont) {
+#pragma omp critical
+{
             if (node->is_expanded() && !node->get_children().empty()) {
                 node = node->select();
                 if (node == nullptr) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
-                    exit(-1);
                 }
             } else {
                 auto action = node->is_expanded() && node->get_children().empty() ?
@@ -27,10 +31,10 @@ void MCTS::execute(TreeNode *target) {
                 node = node->expand(action);
                 if (node == nullptr) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
-                    exit(-1);
                 }
-                break;
+                cont = false;
             }
+}
         }
 
         auto playout = node->simulate();

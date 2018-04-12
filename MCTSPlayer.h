@@ -13,7 +13,10 @@ public:
         auto node = TreeNode(state);
         mcts = new MCTS(node);
     }
-    int move(const Board &newBoard) {
+    int move(const Board &newBoard, int step) {
+        int simulCount = (15 * (step * 1.0 / 60) * (step * 1.0 / 60) + 1.0) * MaxMCTSSim;
+        printf("Simul count: %d\n", simulCount);
+
         auto action = newBoard.diff(lastBoard);
         if (newBoard == lastBoard) {
             printf("MCTSPlayer::move other player fails to move, skipping...\n");
@@ -32,7 +35,7 @@ public:
         } else {
             node = actionExpand->second;
         }
-        mcts->execute(node);
+        mcts->execute(node, simulCount);
 
         auto newNode = TreeNode(State(newBoard));
         node = mcts->find(&newNode);

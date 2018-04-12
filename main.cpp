@@ -59,7 +59,9 @@ char * httpd_callback(char * str){
 
     auto action_str = new char[64];
     Board board = str2board(str);
-    int action = mp.move(board);
+
+    static int step = 0;
+    int action = mp.move(board, ++step);
 
 
     gettimeofday(&t2,NULL);
