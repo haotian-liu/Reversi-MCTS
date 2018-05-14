@@ -20,12 +20,14 @@ void MCTS::execute(TreeNode *target, int simulCount) {
         while (!node->has_finished() && cont) {
 #pragma omp critical
 {
+            // select best if node has been expanded
             if (node->is_expanded() && !node->get_children().empty()) {
                 node = node->select();
                 if (node == nullptr) {
                     fprintf(stderr, "MCTS::execute expand nullptr.");
                 }
             } else {
+                // find an action to expand
                 auto action = node->is_expanded() && node->get_children().empty() ?
                               Action(-1, node->get_current_player()) : node->random_expand();
                 node = node->expand(action);
@@ -37,8 +39,10 @@ void MCTS::execute(TreeNode *target, int simulCount) {
 }
         }
 
+        // simulate
         auto playout = node->simulate();
         TreeNode::total_simul++;
+        // back propagation
         node->bp(playout);
     }
 

@@ -20,11 +20,12 @@ bool TreeNode::is_expanded() const {
 }
 
 Action TreeNode::random_expand() const {
-    auto actions = get_available_actions();
+    auto actions = get_available_actions(); // get all actions
     if (actions.empty() || actions.size() == children.size()) {
         fprintf(stderr, "TreeNode::random_expand fails: fully expanded.");
         exit(-1);
     }
+    // erase already present actions
     for (const auto &child : children) {
         auto action = std::find(actions.begin(), actions.end(), child.first);
         if (action == actions.end()) {
@@ -36,11 +37,13 @@ Action TreeNode::random_expand() const {
     static std::default_random_engine generator;
     std::uniform_int_distribution<int> distribution(1, actions.size());
     int id = distribution(generator) - 1;
+    // return randomly selected one
     return actions[id];
 }
 
 TreeNode *TreeNode::expand(Action action) {
     auto actions = get_available_actions();
+    // determine whether valid expansion
     if (!action.is_dummy() && actions.empty()) {
         return nullptr;
     }
@@ -50,8 +53,10 @@ TreeNode *TreeNode::expand(Action action) {
     }
     auto state = this->state;
     auto child = new TreeNode(state, this);
+    // update current board of the state
     child->state.board.putWith(action);
     using children_map_type = decltype(children);
+    // insert to the children list
     children.insert(children_map_type::value_type(action, child));
     return child;
 }
@@ -102,6 +107,7 @@ TreeNode *TreeNode::select() const {
         return nullptr;
     } else {
         using children_map_type = decltype(children);
+        // using closure to find the best ucb.
         return std::max_element(children.begin(), children.end(),
             [](const children_map_type::value_type &p1, const children_map_type::value_type &p2) {
                 return p1.second->ucb() < p2.second->ucb();
@@ -114,6 +120,7 @@ const Action * TreeNode::best_action() const {
     if (children.empty()) {
         return nullptr;
     } else {
+        // find the best action iteratively
         const Action *bestAction = &children.begin()->first;
         auto bestValue = children.begin()->second->value();
         for (const auto &child : children) {
@@ -144,6 +151,7 @@ TreeNode *TreeNode::find(TreeNode *target) const {
 }
 
 double TreeNode::simulate() const {
+    // using different method to simulate: greedy, minmax, random.
     auto sim = SimulGreedy(state.board);
     return sim.run();
 }
@@ -160,7 +168,7 @@ void TreeNode::bp(double value) {
     while (node != nullptr) {
         node->playout += value;
         node->simuls++;
-//        node->sync_global_recorder(value); // AMAF policy
+        node->sync_global_recorder(value); // AMAF policy
 
         node = node->parent;
     }

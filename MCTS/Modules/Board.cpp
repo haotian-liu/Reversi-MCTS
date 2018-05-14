@@ -42,12 +42,15 @@ void Board::putWith(const Action &action) {
         return;
     }
     uint64_t mask = HIGHESTBIT >> action.get_coord();
+    // invalid position if already put.
     if (p1 & mask || p2 & mask) {
         fprintf(stderr, "Board::putWith: putting chess on invalid pos.");
         exit(-1);
     }
+    // update chessboard
     if (action.get_player() == 1) { p1 |= mask; }
     else { p2 |= mask; }
+    // update board with color switches for on-board chess.
     updateAfterPut(action);
     switchPlayer();
 }
@@ -59,6 +62,7 @@ void Board::updateAfterPut(const Action &action) {
     auto act_p2 = action.get_player() & 2 ? p1 : p2; // action rival
     uint64_t new_p1 = act_p1, new_p2 = act_p2;
 
+    // test shifts on different directions
     for (auto shift : SHIFT) {
         auto act = action.get_coord() + shift;
         auto act_mask = action.get_coord() >> 3;
@@ -70,6 +74,7 @@ void Board::updateAfterPut(const Action &action) {
                && (shift != -9 || act % 8 != 7)
                && (shift !=  7 || act % 8 != 7)
                && (shift !=  9 || act % 8 != 0)) {
+            // if available, continue, try to record the farthest way
             auto mask = HIGHESTBIT >> act;
             if (act_p2 & mask) {
                 shifts++;
@@ -89,6 +94,7 @@ void Board::updateAfterPut(const Action &action) {
             && (act_p1 & (HIGHESTBIT >> act))) {
             act = action.get_coord() + shift;
             while (shifts--) {
+                // continue update until reaches the end
                 auto mask = HIGHESTBIT >> act;
 
                 new_p1 |= mask;
@@ -98,6 +104,7 @@ void Board::updateAfterPut(const Action &action) {
             }
         }
     }
+    // update to current players
     p1 = action.get_player() & 1 ? new_p1 : new_p2;
     p2 = action.get_player() & 2 ? new_p1 : new_p2;
 #ifdef DEBUG
@@ -152,6 +159,7 @@ bool Board::is_available(const Action &action) const {
         auto act = action.get_coord() + shift;
         auto act_mask = action.get_coord() >> 3;
         bool flag = false;
+        // same logic.
         while (act >= 0 && act < 64
                && ((shift != 1 && shift != -1) || (act >> 3) == act_mask)
                && (shift != -7 || act % 8 != 0)
